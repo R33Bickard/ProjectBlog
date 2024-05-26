@@ -2,12 +2,13 @@ package project.blog.control;
 
 import java.util.List;
 
+import project.blog.entity.Blog;
+import project.blog.repository.BlogRepository;
 import io.quarkus.logging.Log;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-import project.blog.entity.Blog;
-import project.blog.repository.BlogRepository;
+import jakarta.transaction.Transactional;
 
 @Dependent
 public class BlogService {
@@ -15,13 +16,14 @@ public class BlogService {
     BlogRepository blogRepository;
 
     public List<Blog> getBlogs() {
-        var blogs = blogRepository.getBlogs();
+        var blogs = blogRepository.listAll();
         Log.info("Returning " + blogs.size() + " blogs");
         return blogs;
     }
 
+    @Transactional
     public void addBlog(Blog blog) {
         Log.info("Adding blog " + blog.getTitle());
-        blogRepository.addBlog(blog);
+        blogRepository.persist(blog);
     }
 }

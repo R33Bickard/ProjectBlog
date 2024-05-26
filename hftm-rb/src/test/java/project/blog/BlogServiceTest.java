@@ -19,7 +19,7 @@ public class BlogServiceTest {
     @Test
     void listingAndAddingBlogs() {
         // Arrange
-        Blog blog = new Blog("Testing Blog", "This is my testing blog");
+        Blog blog = new Blog();
         int blogsBefore;
         List<Blog> blogs;
 
