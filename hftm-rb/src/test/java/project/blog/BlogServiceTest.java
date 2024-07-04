@@ -1,35 +1,53 @@
 package project.blog;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import project.blog.control.BlogService;
 import project.blog.entity.Blog;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class BlogServiceTest {
+
     @Inject
     BlogService blogService;
 
     @Test
-    void listingAndAddingBlogs() {
+    void testAddingAndGettingBlogs() {
         // Arrange
-        Blog blog = new Blog();
-        int blogsBefore;
-        List<Blog> blogs;
+        Blog newBlog = new Blog("Test Blog", "This is a test blog");
+        int initialSize = blogService.getBlogs().size();
 
         // Act
-        blogsBefore = blogService.getBlogs().size();
-        blogService.addBlog(blog);
-        blogs = blogService.getBlogs();
+        blogService.addBlog(newBlog);
+        List<Blog> blogs = blogService.getBlogs();
 
         // Assert
-        assertEquals(blogsBefore + 1, blogs.size());
-        assertEquals(blog, blogs.get(blogs.size() - 1));
+        assertEquals(initialSize + 1, blogs.size(), "Blog should be added");
+        assertTrue(blogs.contains(newBlog), "The new blog should be in the list");
     }
+
+    @Test
+    void testDeletingBlogs() {
+        // Arrange
+        Blog blogToDelete = new Blog("Delete Me", "This blog should be deleted");
+        blogService.addBlog(blogToDelete);
+        Long blogIdToDelete = blogToDelete.getId();
+
+        // Act
+        blogService.deleteBlog(blogIdToDelete);
+        Blog foundBlog = blogService.getBlogById(blogIdToDelete);
+
+        // Assert
+        assertNull(foundBlog, "The blog should be deleted");
+    }
+
 }
