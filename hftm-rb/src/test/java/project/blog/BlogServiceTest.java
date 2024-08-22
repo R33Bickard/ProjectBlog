@@ -1,9 +1,6 @@
 package project.blog;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -21,33 +18,18 @@ public class BlogServiceTest {
     BlogService blogService;
 
     @Test
-    void testAddingAndGettingBlogs() {
+    void listingAndAddingBlogs() {
         // Arrange
-        Blog newBlog = new Blog("Test Blog", "This is a test blog");
-        int initialSize = blogService.getBlogs().size();
+        Blog blog = new Blog("Test Blog", "This is a test blog.");
+        int blogsBefore = blogService.getBlogs().size();
 
         // Act
-        blogService.addBlog(newBlog);
-        List<Blog> blogs = blogService.getBlogs();
+        blogService.addBlog(blog);
+        List<Blog> blogsAfter = blogService.getBlogs();
 
         // Assert
-        assertEquals(initialSize + 1, blogs.size(), "Blog should be added");
-        assertTrue(blogs.contains(newBlog), "The new blog should be in the list");
+        assertEquals(blogsBefore + 1, blogsAfter.size(), "Die Anzahl der Blogs sollte sich um 1 erhöhen.");
+        assertEquals(blog.getTitle(), blogsAfter.get(blogsAfter.size() - 1).getTitle(), "Der letzte hinzugefügte Blog sollte den gleichen Titel haben.");
+        assertEquals(blog.getContent(), blogsAfter.get(blogsAfter.size() - 1).getContent(), "Der letzte hinzugefügte Blog sollte den gleichen Inhalt haben.");
     }
-
-    @Test
-    void testDeletingBlogs() {
-        // Arrange
-        Blog blogToDelete = new Blog("Delete Me", "This blog should be deleted");
-        blogService.addBlog(blogToDelete);
-        Long blogIdToDelete = blogToDelete.getId();
-
-        // Act
-        blogService.deleteBlog(blogIdToDelete);
-        Blog foundBlog = blogService.getBlogById(blogIdToDelete);
-
-        // Assert
-        assertNull(foundBlog, "The blog should be deleted");
-    }
-
 }

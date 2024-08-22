@@ -1,56 +1,61 @@
 package project.blog.control;
-
 import java.util.List;
 
 import project.blog.entity.Blog;
 import project.blog.repository.BlogRepository;
 import io.quarkus.logging.Log;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import io.quarkus.logging.Log;
-import io.quarkus.panache.common.Sort;
+import jakarta.ws.rs.WebApplicationException;
 
-@ApplicationScoped
+@Dependent
 public class BlogService {
 
     @Inject
-    private BlogRepository blogRepository;
+    BlogRepository blogRepository;
 
     public List<Blog> getBlogs() {
-        List<Blog> blogs = blogRepository.listAll(Sort.by("title"));
+        var blogs = blogRepository.listAll();
         Log.info("Returning " + blogs.size() + " blogs");
         return blogs;
     }
 
     @Transactional
     public void addBlog(Blog blog) {
-        Log.info("Adding blog with ID: " + blog.getId());
+        Log.info("Adding blog " + blog.getTitle());
         blogRepository.persist(blog);
     }
 
     @Transactional
-    public void deleteBlog(Long blogId) {
-        Blog blog = blogRepository.findById(blogId);
-        if (blog != null) {
-            blogRepository.delete(blog);
-            Log.info("Deleted blog: " + blog.getTitle());
-        } else {
-            Log.warn("Blog not found with ID: " + blogId);
+    public void updateBlog(Long id, Blog updatedBlog){
+        Blog existingBlog = blogRepository.findById(id);
+        existingBlog.setTitle(updatedBlog.getTitle());
+        existingBlog.setContent(updatedBlog.getContent());
+        blogRepository.persist(existingBlog);
         }
+
+    @Transactional
+    public void partialUpdateBlog(Long id, Blog partialUpdatedBlog){
+        Blog existingBlog = blogRepository.findById(id);
+        if(partialUpdatedBlog.getTitle() != null){
+            existingBlog.setTitle(partialUpdatedBlog.getTitle());
+        }        
+        if(partialUpdatedBlog.getContent() != null){
+            existingBlog.setContent(partialUpdatedBlog.getContent());
+        }
+        blogRepository.persist(existingBlog);
     }
 
     @Transactional
-    public void updateBlog(Blog blog) {
-        if (blog.getId() != null && blogRepository.findById(blog.getId()) != null) {
-            blogRepository.getEntityManager().merge(blog);
-            Log.info("Updated blog: " + blog.getTitle());
-        } else {
-            Log.warn("Blog not found with ID: " + blog.getId());
+    public void deleteBlog(String title) {
+        Blog blogToDelete = blogRepository.find("title", title).firstResult();
+        if(blogToDelete != null){
+            Log.info("Deleting blog " + blogToDelete.getTitle());
+            blogRepository.delete(blogToDelete);
+        }else{
+            Log.info("Blog not found");
+            throw new WebApplicationException("Blog with title not found.", 404);
+            }
         }
-    }
-
-    public Blog getBlogById(Long id) {
-        return blogRepository.findById(id);
-    }
 }
