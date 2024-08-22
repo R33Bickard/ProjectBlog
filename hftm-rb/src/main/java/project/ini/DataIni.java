@@ -13,13 +13,15 @@ public class DataIni {
   @Inject
   BlogRepository blogRepository;
 
-    @Transactional
-    public void init(@Observes StartupEvent event) {
-            if (blogRepository.count() == 0) {
-              Blog blog1 = new Blog("Titel", "Content");
-              Blog blog2 = new Blog("Titel 2", "Content2");
-              blogRepository.persist(blog1);
-              blogRepository.persist(blog2);
+  @Transactional
+  public void init(@Observes StartupEvent event) {
+    if (blogRepository.count() == 0) {
+      Blog blog1 = new Blog("Exploring the Future of AI", 
+                            "Artificial Intelligence (AI) continues to evolve, bringing new possibilities and challenges. In this post, we explore the potential future developments in AI technology.");
+      Blog blog2 = new Blog("Sustainable Living: Tips for a Greener Life", 
+                            "Sustainability is becoming increasingly important in our daily lives. This blog offers practical tips on how to live a more eco-friendly and sustainable lifestyle.");
+      blogRepository.persist(blog1);
+      blogRepository.persist(blog2);
     }
   }
 }
