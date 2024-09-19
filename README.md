@@ -53,3 +53,8 @@ Das Projekt ist in folgende Pakete unterteilt:
 - BlogServiceTest: Testet die Geschäftslogik für das Erstellen und Abrufen von Blogs.
 - KeyCloakTest: Überprüft die Autorisierung und Authentifizierung über Keycloak.
 
+# Docker
+- Container für Quarkus erstellen
+- Container für Keycloak erstellen
+- Container für MySQL erstellen 
+
